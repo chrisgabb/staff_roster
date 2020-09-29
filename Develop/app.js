@@ -13,51 +13,63 @@ const render = require("./lib/htmlRenderer");
 
 // Write code to use inquirer to gather information about the development team members,
 
-function promptUser() {
-    return inquirer.prompt([
-      {
-        type: "list",
-        name: "position",
-        message: "Choose the position of the employee",
-        choices: ["Manager", "Engineer", "Intern"]
-      },
-      {
-        type: "input",
-        name: "name",
-        message: `Enter the name of the ${data.position} you are adding`,
-      },
-      {
-        type: "input",
-        name: "email",
-        message: "Enter the  email address",
-      },
-      {
-        type: "input",
-        name: "officeid",
-        message: `Enter the ${data.postion}'s Office ID`,
-        when: (data) => data.position === "Manager"
-      },
-      {
-        type: "input",
-        name: "github",
-        message: `Enter the ${data.position}'s Github URL`,
-        when: (data) => data.position === "Engineer"
-      },
-      {
-        type: "input",
-        name: "school",
-        message: `Enter the ${data.position}'s school name`,
-        when: (data) => data.position === "Intern"
-      },
-      {
-        type: "list",
-        name: "add",
-        message: `Do you want to add another employee?`,
-      },
-    ]);
+function promptManager() {
+  return inquirer.prompt([
+    {
+      type: "input",
+      name: "name",
+      message: "What is the name of the manager?",
+    },
+    {
+      type: "input",
+      name: "email",
+      message: "Enter the email address of the manager",
+    },
+    {
+      type: "input",
+      name: "officeid",
+      message: `Enter the manager's Office ID`,
+    },
+    {
+      type: "list",
+      name: "add",
+      message: `Do you want to add another employee?`,
+    },
+  ]);
+}
 
-    
-  }
+
+function promptEngineer() {
+  return inquirer.prompt([
+
+    {
+      type: "input",
+      name: "name",
+      message: "What is the name of the engineer?",
+    },
+    {
+      type: "input",
+      name: "github",
+      message: `Enter the engineer's Github URL`,
+    },
+
+  ])
+}
+
+function promptIntern() {
+  return inquirer.prompt([
+    {
+      type: "input",
+      name: "name",
+      message: "What is the name of the intern?",
+    },
+    {
+      type: "input",
+      name: "school",
+      message: `Enter the intern's school name`,
+    },
+  ])
+}
 
 
 // and to create objects for each team member (using the correct classes as blueprints!)
