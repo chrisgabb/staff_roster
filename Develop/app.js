@@ -34,8 +34,11 @@ function promptManager() {
       type: "list",
       name: "add",
       message: `Do you want to add another employee?`,
+      choices: ["Yes: Add New Engineer", "Yes: Add New Intern", "No"]
     },
-  ]);
+  ]). then(a => {
+    new Manager(data.id, data.name, data.email, data.officerid)
+  })
 }
 
 
@@ -52,7 +55,12 @@ function promptEngineer() {
       name: "github",
       message: `Enter the engineer's Github URL`,
     },
-
+    {
+      type: "list",
+      name: "add",
+      message: `Do you want to add another employee?`,
+      choices: ["Yes: Add New Engineer", "Yes: Add New Intern", "No"]
+    },
   ])
 }
 
@@ -68,12 +76,20 @@ function promptIntern() {
       name: "school",
       message: `Enter the intern's school name`,
     },
-  ])
+    {
+      type: "list",
+      name: "add",
+      message: `Do you want to add another employee?`,
+      choices: ["Yes: Add New Engineer", "Yes: Add New Intern", "No"]
+    },
+  ]).then(a => {
+    new Intern(data.id, data.name, data.school, data.officerid)
+  })
 }
 
 
 // and to create objects for each team member (using the correct classes as blueprints!)
-promptUser()
+
 // After the user has input all employees desired, call the `render` function (required
 // above) and pass in an array containing all employee objects; the `render` function will
 // generate and return a block of HTML including templated divs for each employee!
