@@ -139,13 +139,11 @@ function promptIntern() {
 }
 
 async function createPage() {
-	try {
 		await promptManager();
 		const createPage = render(employees)
-		fs.writeFile(outputPath, createPage)
-	} catch (err) {
-		console.log(err)
+		fs.writeFile(outputPath, createPage, (err) => {
+			console.log(err)
+		})
 	}
-}
 
 createPage();
