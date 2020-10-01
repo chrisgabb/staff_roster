@@ -34,12 +34,13 @@ function promptManager() {
     },
     {
       type: "list",
-      name: "add",
+      name: "adding",
       message: `Do you want to add another employee?`,
       choices: ["Yes: Add New Engineer", "Yes: Add New Intern", "No"]
     },
-  ]).then(a => {
-    employees.push(new Manager(a.id, a.role, a.name, a.email, a.officeid))
+  ]).then(answer => {
+    employees.push(new Manager(answer.id, answer.name, answer.email, answer.officeid))
+
   })
 }
 
@@ -64,12 +65,12 @@ function promptEngineer() {
     },
     {
       type: "list",
-      name: "add",
+      name: "adding",
       message: `Do you want to add another employee?`,
       choices: ["Yes: Add New Engineer", "Yes: Add New Intern", "No"]
     },
   ]).then(b => {
-    employees.push(new Intern(b.id, b.role, b.name, b.email, b.github))
+    employees.push(new Intern(b.id, b.name, b.email, b.github))
   })
 }
 
@@ -92,21 +93,22 @@ function promptIntern() {
     },
     {
       type: "list",
-      name: "add",
+      name: "adding",
       message: `Do you want to add another employee?`,
       choices: ["Yes: Add New Engineer", "Yes: Add New Intern", "No"]
     },
   ]).then(c => {
-    employees.push(new Intern(c.id, c.role, c.name, c.email, c.school))
+    employees.push(new Intern(c.id, c.name, c.email, c.school))
   })
 }
 
 // Start prompts
 async function startPrompts() {
   try {
-  await promptManager();
-    async function nextPrompt(a) {
-      switch (a.add) {
+    const answer = await promptManager()
+  
+    async function nextPrompt(answer) {
+      switch (answer.adding) {
         case "Yes: Add New Engineer":
           const engineerInfo = await promptEngineer();
           await nextPrompt(engineerInfo);
@@ -120,7 +122,7 @@ async function startPrompts() {
           break;
       }
     }
-    await nextPrompt(a)
+    await nextPrompt(answer)
   } catch (err) {
     console.log(err);
   }
@@ -137,7 +139,7 @@ async function createPage() {
     // `output` folder. You can use the variable `outputPath` above target this location.
 
     const createPage = await render(employees)
-    fs.writeFile(outputPath, createPage)
+    await util.promisify(fs.writeFile(outputPath, createPage))
   }
   catch (err) {
     console.log(err)
