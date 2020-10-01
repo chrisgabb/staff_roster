@@ -5,11 +5,12 @@ const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
 
+
 const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
-
+const util = require("util");
 
 // Write code to use inquirer to gather information about the development team members,
 
@@ -40,6 +41,17 @@ function promptManager() {
     },
   ]).then(answer => {
     employees.push(new Manager(answer.id, answer.name, answer.email, answer.officeid))
+    switch (answer.adding) {
+      case "Yes: Add New Engineer":
+        promptEngineer();
+        break;
+      case "Yes: Add New Intern":
+        promptIntern();
+        break;
+      case "No":
+        console.log("Thank you! You are done adding employees to the roster.");
+        break;
+    }
 
   })
 }
@@ -69,8 +81,19 @@ function promptEngineer() {
       message: `Do you want to add another employee?`,
       choices: ["Yes: Add New Engineer", "Yes: Add New Intern", "No"]
     },
-  ]).then(b => {
-    employees.push(new Intern(b.id, b.name, b.email, b.github))
+  ]).then(answer => {
+    employees.push(new Engineer(answer.id, answer.name, answer.email, answer.github))
+    switch (answer.adding) {
+      case "Yes: Add New Engineer":
+        promptEngineer();
+        break;
+      case "Yes: Add New Intern":
+        promptIntern();
+        break;
+      case "No":
+        console.log("Thank you! You are done adding employees to the roster.");
+        break;
+    }
   })
 }
 
@@ -97,39 +120,24 @@ function promptIntern() {
       message: `Do you want to add another employee?`,
       choices: ["Yes: Add New Engineer", "Yes: Add New Intern", "No"]
     },
-  ]).then(c => {
-    employees.push(new Intern(c.id, c.name, c.email, c.school))
+  ]).then(answer => {
+    employees.push(new Intern(answer.id, answer.name, answer.email, answer.school))
+    switch (answer.adding) {
+      case "Yes: Add New Engineer":
+        promptEngineer();
+        break;
+      case "Yes: Add New Intern":
+        promptIntern();
+        break;
+      case "No":
+        console.log("Thank you! You are done adding employees to the roster.");
+        break;
+    }
   })
 }
 
-// Start prompts
-async function startPrompts() {
-  try {
-    const answer = await promptManager()
-  
-    async function nextPrompt(answer) {
-      switch (answer.adding) {
-        case "Yes: Add New Engineer":
-          const engineerInfo = await promptEngineer();
-          await nextPrompt(engineerInfo);
-          break;
-        case "Yes: Add New Intern":
-          const internInfo = await promptIntern();
-          await nextPrompt(internInfo);
-          break;
-        case "No":
-          console.log("Thank you! You are done adding employees to the roster.");
-          break;
-      }
-    }
-    await nextPrompt(answer)
-  } catch (err) {
-    console.log(err);
-  }
-}
-// After the user has input all employees desired, call the `render` function (required
 async function createPage() {
-  await startPrompts();
+  await promptManager();
   try {
     // above) and pass in an array containing all employee objects; the `render` function will
     // generate and return a block of HTML including templated divs for each employee!
