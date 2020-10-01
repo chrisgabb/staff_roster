@@ -1,24 +1,28 @@
 // TODO: Write code to define and export the Employee class
+const EMPLOYEE_ROLE = "Employee"
+
 class Employee {
-    constructor(id, role, name, email) {
-        this.role = role
+
+    constructor(name, id, email) {
+        this.id = id;
         this.name = name;
         this.email = email;
+        this.role = EMPLOYEE_ROLE;
     }
 
-    getID() {
-        return this.id = id
+    getId() {
+        return this.id
     }
 
     getName() {
-        return this.name = name
+        return this.name
     }
 
     getEmail() {
-        return this.email = email
+        return this.email
     }
     getRole() {
-        return this.role = role
+        return this.role
     }
 
 }
