@@ -13,6 +13,8 @@ const render = require("./lib/htmlRenderer");
 
 // Write code to use inquirer to gather information about the development team members,
 
+const employees = [];
+
 function promptManager() {
   return inquirer.prompt([
     {
@@ -36,8 +38,8 @@ function promptManager() {
       message: `Do you want to add another employee?`,
       choices: ["Yes: Add New Engineer", "Yes: Add New Intern", "No"]
     },
-  ]). then(a => {
-    new Manager(data.id, data.name, data.email, data.officerid)
+  ]).then(a => {
+    employees.push(new Manager(a.id, a.role, a.name, a.email, a.officeid))
   })
 }
 
@@ -52,6 +54,11 @@ function promptEngineer() {
     },
     {
       type: "input",
+      name: "email",
+      message: "Enter the email address of the engineer",
+    },
+    {
+      type: "input",
       name: "github",
       message: `Enter the engineer's Github URL`,
     },
@@ -61,7 +68,9 @@ function promptEngineer() {
       message: `Do you want to add another employee?`,
       choices: ["Yes: Add New Engineer", "Yes: Add New Intern", "No"]
     },
-  ])
+  ]).then(b => {
+    employees.push(new Intern(b.id, b.role, b.name, b.email, b.github))
+  })
 }
 
 function promptIntern() {
@@ -70,6 +79,11 @@ function promptIntern() {
       type: "input",
       name: "name",
       message: "What is the name of the intern?",
+    },
+    {
+      type: "input",
+      name: "email",
+      message: "Enter the email address of the engineer",
     },
     {
       type: "input",
@@ -82,30 +96,52 @@ function promptIntern() {
       message: `Do you want to add another employee?`,
       choices: ["Yes: Add New Engineer", "Yes: Add New Intern", "No"]
     },
-  ]).then(a => {
-    new Intern(data.id, data.name, data.school, data.officerid)
+  ]).then(c => {
+    employees.push(new Intern(c.id, c.role, c.name, c.email, c.school))
   })
 }
 
-
-// and to create objects for each team member (using the correct classes as blueprints!)
-
+// Start prompts
+async function startPrompts() {
+  try {
+  await promptManager();
+    async function nextPrompt(a) {
+      switch (a.add) {
+        case "Yes: Add New Engineer":
+          const engineerInfo = await promptEngineer();
+          await nextPrompt(engineerInfo);
+          break;
+        case "Yes: Add New Intern":
+          const internInfo = await promptIntern();
+          await nextPrompt(internInfo);
+          break;
+        case "No":
+          console.log("Thank you! You are done adding employees to the roster.");
+          break;
+      }
+    }
+    await nextPrompt(a)
+  } catch (err) {
+    console.log(err);
+  }
+}
 // After the user has input all employees desired, call the `render` function (required
-// above) and pass in an array containing all employee objects; the `render` function will
-// generate and return a block of HTML including templated divs for each employee!
+async function createPage() {
+  await startPrompts();
+  try {
+    // above) and pass in an array containing all employee objects; the `render` function will
+    // generate and return a block of HTML including templated divs for each employee!
 
-// After you have your html, you're now ready to create an HTML file using the HTML
-// returned from the `render` function. Now write it to a file named `team.html` in the
-// `output` folder. You can use the variable `outputPath` above target this location.
-// Hint: you may need to check if the `output` folder exists and create it if it
-// does not.
+    // After you have your html, you're now ready to create an HTML file using the HTML
+    // returned from the `render` function. Now write it to a file named `team.html` in the
+    // `output` folder. You can use the variable `outputPath` above target this location.
 
-// HINT: each employee type (manager, engineer, or intern) has slightly different
-// information; write your code to ask different questions via inquirer depending on
-// employee type.
+    const createPage = await render(employees)
+    fs.writeFile(outputPath, createPage)
+  }
+  catch (err) {
+    console.log(err)
+  }
 
-// HINT: make sure to build out your classes first! Remember that your Manager, Engineer,
-// and Intern classes should all extend from a class named Employee; see the directions
-// for further information. Be sure to test out each class and verify it generates an
-// object with the correct structure and methods. This structure will be crucial in order
-// for the provided `render` function to work! ```
+}
+createPage();
